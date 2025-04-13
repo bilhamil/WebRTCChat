@@ -12,28 +12,32 @@ app.get('/:roomid', function(req, res){
 io.on('connection', function(socket){
   console.log('a user connected');
   var room = null;
+
   socket.on('joinRoom', function(msg){
+    room = msg.roomid;
     console.log(socket.id + " joined " + msg.roomid);
     socket.join(msg.roomid);
   });
 
+  //plain websocket messages
   socket.on("chat message", (msg) => {
-    socket.broadcast.emit("chat message", msg);
+    socket.to(room).emit("chat message", msg);
   })
 
+  //signalling messages
   socket.on("sendOffer", (msg) => {
     console.log("Got offer: " + JSON.stringify(msg.offer));
-    socket.broadcast.emit("sendOffer", msg);
+    socket.to(room).emit("sendOffer", msg);
   });
 
   socket.on("sendAnswer", (msg) => {
     console.log("Got answer: " + JSON.stringify(msg.answer));
-    socket.broadcast.emit("sendAnswer", msg);
+    socket.to(room).emit("sendAnswer", msg);
   });
 
   socket.on("newICE", (msg) => {
     console.log("Got new ice candidate: " + JSON.stringify(msg.candidate));
-    socket.broadcast.emit("newICE", msg);
+    socket.to(room).emit("newICE", msg);
   });
 });
 
