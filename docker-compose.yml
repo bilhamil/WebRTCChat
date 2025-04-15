@@ -1,0 +1,14 @@
+version: '3.4'
+
+services:
+    
+  webrtcexample:
+    restart: always
+    build:
+      context: .
+      dockerfile: ./Dockerfile.node
+    
+networks:
+  default:
+    name: front
+    external: true
